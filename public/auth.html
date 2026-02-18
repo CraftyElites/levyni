@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zion Bridge - Auth System</title>
+    <link rel="icon" type="image/x-icon" href="http://localhost:3000/assets/favicon (4).ico">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: #050b18;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* Splash Screen Styles */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050b18;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .splash-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,#f13901, #5e1600);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 20px rgb(255, 251, 0);
+        }
+        
+        .splash-logo::before {
+            content: '';
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 2px solid rgba(131, 46, 0, 1);
+            animation: rotate 4s linear infinite;
+        }
+        
+        .splash-logo::after {
+            content: '';
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 1.5px dashed rgb(255, 81, 0);
+            animation: rotate-reverse 7s linear infinite;
+        }
+        
+        .splash-logo-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .splash-logo-inner img{
+          width: 95%;
+          height: 95%;
+          transform: translateY(-3px);
+          object-fit: contain;
+        }
+        
+        .splash-title {
+            font-size: 27px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color:  #ffffff;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+        
+        .splash-subtitle {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 1s;
+        }
+        
+        .splash-loading {
+            margin-top: 30px;
+            width: 120px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .splash-loading-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #f06d21, #ff5100);
+            animation: loading 2.5s ease-out forwards;
+            animation-delay: 1.2s;
+            border-radius: 2px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(200, 255, 0, 0.911); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 153, 0, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgb(255, 102, 0); }
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes rotate-reverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes loading {
+            0% { width: 0; }
+            20% { width: 20%; }
+            50% { width: 40%; }
+            70% { width: 60%; }
+            80% { width: 80%; }
+            100% { width: 100%; }
+        }
+        
+        /* Hidden main content */
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.8s ease-in;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .label_input {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            gap: 0.5em;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        #signupBio {
+            height: 100px;
+            resize: none;
+            width: 100%;
+            padding: 18px;
+            background-color: rgb(14, 17, 21);
+            border: 1px solid #f13901;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        /* Rest of your existing styles */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .slider-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+            overflow: hidden;
+        }
+        
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500%;
+            height: 100%;
+            display: flex;
+            animation: slide 30s infinite linear;
+        }
+        
+        .slide {
+            width: 20%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-80%); }
+        }
+        
+        .container {
+            width: 90%;
+            min-height: 70vh;
+            max-width: 450px;
+            background: rgba(137, 31, 2, 0.562);
+            backdrop-filter: blur(5px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(255, 81, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            position: relative;
+            z-index: 10;
+            overflow-y: auto;
+            scrollbar-width: none;
+            max-height: 95%;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 140, 255, 0.1));
+            z-index: -1;
+            animation: rotate 15s infinite linear;
+            border-radius: 5rem;
+            max-height: 30em;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
+            width: 100%;
+            position: relative;
+        }
+        header h1 {
+            margin-left: 1.5em;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: 1px;
+            position: relative;
+            
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff8800, #ff0000);
+            border-radius: 3px;
+        }
+
+        .web-status {
+            font-size: 0.6em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-left: 5px;
+            font-weight: 900;
+            background-color: #ff5100;
+            padding: 0.6em 0.9em;
+            border-radius: 50em;
+            margin-top: -4.5em;
+            position: relative;
+            right: 1.2em;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(59, 22, 0, 0.15);
+            position: relative;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            cursor: pointer;
+            background-color: rgba(99, 44, 37, 0.6);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tab.active {
+            color: #fff;
+        }
+        
+        .tab-highlighter {
+            position: absolute;
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg,#772c00, #ff6600);
+            top: 0;
+            left: 0;
+            z-index: 1;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .form {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+        
+        .form.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.952);
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 18px;
+            background-color: rgb(14, 17, 21);
+            border: 1px solid #f13901;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        input:focus {
+            border-color: #f13901;
+            box-shadow: 0 0 6px 3px #f1a501ef;
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+            width: 100%;
+
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50em;
+            background: linear-gradient(90deg, #f88d29, #f13901);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(81, 255, 0, 0.884);
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            transform: rotate(45deg);
+            transition: 0.8s;
+        }
+        
+        button:hover::after {
+            left: 100%;
+        }
+        
+        .profile-info {
+            display: none;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.4s ease;
+        }
+        
+        .profile-info.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .profile-info h2 {
+            margin-bottom: 20px;
+            position: relative;
+            font-weight: 300;
+            color: #fff;
+        }
+        
+        .profile-info p {
+            background-color: rgba(25, 25, 45, 0.6);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logout-btn {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            margin-top: 20px;
+        }
+        
+        .logout-btn:hover {
+            box-shadow: 0 10px 20px rgba(255, 75, 43, 0.3);
+        }
+        
+        .error-message {
+            color: #ff0000;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .error-message:not(:empty) {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        
+        /* Animation for success message */
+        @keyframes successPulse {
+            0% { color: #00ff95; transform: scale(1); }
+            50% { color: #00c6ff; transform: scale(1.05); }
+            100% { color: #00ff95; transform: scale(1); }
+        }
+        
+        .success-message {
+            animation: successPulse 1.5s infinite;
+        }
+
+        /* Glow effects */
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 114, 255, 0.2) 0%, rgba(0, 114, 255, 0) 70%);
+        }
+        
+        .glow.top-right {
+            top: 0px;
+            right: 0px;
+        }
+        
+        .glow.bottom-left {
+            bottom: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(0, 198, 255, 0.2) 0%, rgba(0, 198, 255, 0) 70%);
+        }
+
+        /* Profile picture styles */
+        .profile-picture-container {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-picture-preview {
+            width: 6em;
+            height: 6em;
+            border-radius: 50%;
+            background-color: rgba(25, 25, 45, 0.6);
+            border: 2px solid  #f13901;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .profile-picture-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-picture-placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .profile-picture-upload {
+            background: transparent;
+            color: #fff4f1;
+            border: 1px solid #f13901;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .profile-picture-upload:hover {
+            background: rgba(30, 255, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Profile page avatar */
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 2px solid rgba(0, 140, 255, 0.5);
+            object-fit: cover;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .profile-header-info {
+            margin-left: 15px;
+        }
+
+        .profile-header-info h2 {
+            margin-bottom: 5px;
+        }
+
+        .profile-header-info p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            background: none;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+        
+        /* OTP Verification Form */
+        .otp-form {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            width: 100%;
+        }
+        
+        .otp-form.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .otp-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .otp-subtitle {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .otp-input-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 22px;
+            border-radius: 12px;
+            margin: 0 2px;
+            background-color: rgba(85, 51, 41, 0.8);
+        }
+        
+        .otp-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .otp-resend {
+            color: #f13901;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .otp-resend:hover {
+            color: #ff9f45;
+        }
+        
+        .countdown {
+            font-weight: 600;
+            color: #ff9f45;
+        }
+
+        @media (max-width: 500px) {
+          .otp-input-container {
+            max-width: 100%;
+          }
+          .otp-input {
+            width: 40px;
+            height: 40px;
+            font-size: 11px;
+            padding: 2px;
+          }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">
+            <div class="splash-logo-inner">
+              <img src="zionwhite.png" alt="">
+            </div>
+        </div>
+        <h1 class="splash-title">ZION BRIDGE</h1>
+        <p class="splash-subtitle">EXPLORING SERVER</p>
+        <div class="splash-loading">
+            <div class="splash-loading-bar"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="background">
+            <canvas id="particleCanvas"></canvas>
+            <div class="slider-container">
+                <div class="slider">
+                    <div class="slide" style="background-image: url('pngwing.com\ \(14\).png');"></div>
+                    <div class="slide" style="background-image: url('pngwing.com\ \(14\).png');"></div>
+                    <div class="slide" style="background-image: url('pngwing.com\ \(14\).png');"></div>
+                    <div class="slide" style="background-image: url('pngwing.com\ \(14\).png');"></div>
+                    <div class="slide" style="background-image: url('pngwing.com\ \(14\).png');"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="glow top-right"></div>
+            <div class="glow bottom-left"></div>
+            
+            <header><h1>Zion Bridge</h1> <span class="web-status">Beta</span></header>
+            
+            <!-- Tabs -->
+            <div class="tab-container" id="tabContainer">
+                <div class="tab-highlighter" id="tabHighlighter"></div>
+                <div class="tab active" data-tab="login">
+                  Login
+                </div>
+                <div class="tab" data-tab="signup">Sign Up</div>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="form active" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail" class="label_input">Email <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M12 2C6.486 2 2 5.589 2 10c0 2.908 1.898 5.515 5 6.934V22l5.339-4.005C17.697 17.852 22 14.32 22 10c0-4.411-4.486-8-10-8zm0 14h-.333L9 18v-2.417l-.641-.247C5.67 14.301 4 12.256 4 10c0-3.309 3.589-6 8-6s8 2.691 8 6-3.589 6-8 6z"></path><path d="M11 11.586 8.707 9.293l-1.414 1.414L11 14.414l6.207-6.207-1.414-1.414z"></path></svg></label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" name="email" required>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="label_input">Password <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M20.1 14.56a2.07 2.07 0 0 0-.47-.18V9.62a1.64 1.64 0 0 0 .48-.18 1.78 1.78 0 0 0-1.78-3.09 1.62 1.62 0 0 0-.41.32l-4.11-2.38a1.7 1.7 0 0 0 .07-.51 1.78 1.78 0 0 0-3.56 0 1.7 1.7 0 0 0 .07.51L6.28 6.66a1.58 1.58 0 0 0-.41-.31 1.78 1.78 0 0 0-1.78 3.09 1.64 1.64 0 0 0 .48.18v4.76a2.07 2.07 0 0 0-.47.18 1.78 1.78 0 1 0 1.78 3.09 1.72 1.72 0 0 0 .4-.31l4.11 2.37a1.7 1.7 0 0 0-.07.51 1.78 1.78 0 0 0 3.56 0 1.69 1.69 0 0 0-.09-.56l4.09-2.36a1.7 1.7 0 0 0 .44.35 1.78 1.78 0 1 0 1.78-3.09zM6.72 15.69a1.72 1.72 0 0 0-.19-.47 1.53 1.53 0 0 0-.31-.4l5.38-9.33a1.82 1.82 0 0 0 1 0l5.4 9.33a1.53 1.53 0 0 0-.31.4 1.72 1.72 0 0 0-.19.47zM17.5 7.4a1.81 1.81 0 0 0 .17 1.38 1.75 1.75 0 0 0 1.12.84v4.76h-.07l-5.39-9.31.05-.07zM10.82 5a.12.12 0 0 0 0 .05L5.48 14.4h-.07V9.62a1.75 1.75 0 0 0 1.12-.84A1.81 1.81 0 0 0 6.7 7.4zm2.6 14a1.78 1.78 0 0 0-1.32-.58 1.75 1.75 0 0 0-1.28.54L6.7 16.6v-.06h10.78v.11z"></path></svg></label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" name="password" required>
+                </div>
+                <input type="hidden" id="csrfToken">
+
+                <button id="loginButton">Sign in</button>
+                <div class="error-message" id="loginError"></div>
+            </div>
+            
+            <!-- Sign Up Form -->
+            <div class="form" id="signupForm">
+                <!-- Profile Picture Upload -->
+                <div class="profile-picture-container">
+                    <div class="profile-picture-preview" id="profilePicturePreview">
+                        <div class="profile-picture-placeholder">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 23" style="fill: #eeeeee;transform: ;msFilter:;"><path d="M12 2C6.579 2 2 6.579 2 12s4.579 10 10 10 10-4.579 10-10S17.421 2 12 2zm0 5c1.727 0 3 1.272 3 3s-1.273 3-3 3c-1.726 0-3-1.272-3-3s1.274-3 3-3zm-5.106 9.772c.897-1.32 2.393-2.2 4.106-2.2h2c1.714 0 3.209.88 4.106 2.2C15.828 18.14 14.015 19 12 19s-3.828-.86-5.106-2.228z"></path></svg>                        </div>
+                    </div>
+                    <label for="profilePictureInput" class="profile-picture-upload">Upload Image</label>
+                    <input type="file" id="profilePictureInput" accept="image/*" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupName" class="label_input">Name <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M20.005 5.995h-1v2h1v8h-1v2h1c1.103 0 2-.897 2-2v-8c0-1.102-.898-2-2-2zm-14 4H15v4H6.005z"></path><path d="M17.005 17.995V4H20V2h-8v2h3.005v1.995h-11c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h11V20H12v2h8v-2h-2.995v-2.005zm-13-2v-8h11v8h-11z"></path></svg></label>
+                    <input type="text" id="signupName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="loginEmail" class="label_input">Email <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M12 2C6.486 2 2 5.589 2 10c0 2.908 1.898 5.515 5 6.934V22l5.339-4.005C17.697 17.852 22 14.32 22 10c0-4.411-4.486-8-10-8zm0 14h-.333L9 18v-2.417l-.641-.247C5.67 14.301 4 12.256 4 10c0-3.309 3.589-6 8-6s8 2.691 8 6-3.589 6-8 6z"></path><path d="M11 11.586 8.707 9.293l-1.414 1.414L11 14.414l6.207-6.207-1.414-1.414z"></path></svg></label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required minlength="10" maxlength="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupWhatsapp" class="label_input">WhatsApp Number <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.403 5.633A8.919 8.919 0 0 0 12.053 3c-4.948 0-8.976 4.027-8.978 8.977 0 1.582.413 3.126 1.198 4.488L3 21.116l4.759-1.249a8.981 8.981 0 0 0 4.29 1.093h.004c4.947 0 8.975-4.027 8.977-8.977a8.926 8.926 0 0 0-2.627-6.35m-6.35 13.812h-.003a7.446 7.446 0 0 1-3.798-1.041l-.272-.162-2.824.741.753-2.753-.177-.282a7.448 7.448 0 0 1-1.141-3.971c.002-4.114 3.349-7.461 7.465-7.461a7.413 7.413 0 0 1 5.275 2.188 7.42 7.42 0 0 1 2.183 5.279c-.002 4.114-3.349 7.462-7.461 7.462m4.093-5.589c-.225-.113-1.327-.655-1.533-.73-.205-.075-.354-.112-.504.112s-.58.729-.711.879-.262.168-.486.056-.947-.349-1.804-1.113c-.667-.595-1.117-1.329-1.248-1.554s-.014-.346.099-.458c.101-.1.224-.262.336-.393.112-.131.149-.224.224-.374s.038-.281-.019-.393c-.056-.113-.505-1.217-.692-1.666-.181-.435-.366-.377-.504-.383a9.65 9.65 0 0 0-.429-.008.826.826 0 0 0-.599.28c-.206.225-.785.767-.785 1.871s.804 2.171.916 2.321c.112.15 1.582 2.415 3.832 3.387.536.231.954.369 1.279.473.537.171 1.026.146 1.413.089.431-.064 1.327-.542 1.514-1.066.187-.524.187-.973.131-1.067-.056-.094-.207-.151-.43-.263"></path></svg></label>
+                    <input type="tel" id="signupWhatsapp" placeholder="Enter your WhatsApp number"  minlength="11" maxlength="11">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="label_input">Password <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M20.1 14.56a2.07 2.07 0 0 0-.47-.18V9.62a1.64 1.64 0 0 0 .48-.18 1.78 1.78 0 0 0-1.78-3.09 1.62 1.62 0 0 0-.41.32l-4.11-2.38a1.7 1.7 0 0 0 .07-.51 1.78 1.78 0 0 0-3.56 0 1.7 1.7 0 0 0 .07.51L6.28 6.66a1.58 1.58 0 0 0-.41-.31 1.78 1.78 0 0 0-1.78 3.09 1.64 1.64 0 0 0 .48.18v4.76a2.07 2.07 0 0 0-.47.18 1.78 1.78 0 1 0 1.78 3.09 1.72 1.72 0 0 0 .4-.31l4.11 2.37a1.7 1.7 0 0 0-.07.51 1.78 1.78 0 0 0 3.56 0 1.69 1.69 0 0 0-.09-.56l4.09-2.36a1.7 1.7 0 0 0 .44.35 1.78 1.78 0 1 0 1.78-3.09zM6.72 15.69a1.72 1.72 0 0 0-.19-.47 1.53 1.53 0 0 0-.31-.4l5.38-9.33a1.82 1.82 0 0 0 1 0l5.4 9.33a1.53 1.53 0 0 0-.31.4 1.72 1.72 0 0 0-.19.47zM17.5 7.4a1.81 1.81 0 0 0 .17 1.38 1.75 1.75 0 0 0 1.12.84v4.76h-.07l-5.39-9.31.05-.07zM10.82 5a.12.12 0 0 0 0 .05L5.48 14.4h-.07V9.62a1.75 1.75 0 0 0 1.12-.84A1.81 1.81 0 0 0 6.7 7.4zm2.6 14a1.78 1.78 0 0 0-1.32-.58 1.75 1.75 0 0 0-1.28.54L6.7 16.6v-.06h10.78v.11z"></path></svg></label>
+                    <input type="password" id="signupPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="label_input">Password <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M20.1 14.56a2.07 2.07 0 0 0-.47-.18V9.62a1.64 1.64 0 0 0 .48-.18 1.78 1.78 0 0 0-1.78-3.09 1.62 1.62 0 0 0-.41.32l-4.11-2.38a1.7 1.7 0 0 0 .07-.51 1.78 1.78 0 0 0-3.56 0 1.7 1.7 0 0 0 .07.51L6.28 6.66a1.58 1.58 0 0 0-.41-.31 1.78 1.78 0 0 0-1.78 3.09 1.64 1.64 0 0 0 .48.18v4.76a2.07 2.07 0 0 0-.47.18 1.78 1.78 0 1 0 1.78 3.09 1.72 1.72 0 0 0 .4-.31l4.11 2.37a1.7 1.7 0 0 0-.07.51 1.78 1.78 0 0 0 3.56 0 1.69 1.69 0 0 0-.09-.56l4.09-2.36a1.7 1.7 0 0 0 .44.35 1.78 1.78 0 1 0 1.78-3.09zM6.72 15.69a1.72 1.72 0 0 0-.19-.47 1.53 1.53 0 0 0-.31-.4l5.38-9.33a1.82 1.82 0 0 0 1 0l5.4 9.33a1.53 1.53 0 0 0-.31.4 1.72 1.72 0 0 0-.19.47zM17.5 7.4a1.81 1.81 0 0 0 .17 1.38 1.75 1.75 0 0 0 1.12.84v4.76h-.07l-5.39-9.31.05-.07zM10.82 5a.12.12 0 0 0 0 .05L5.48 14.4h-.07V9.62a1.75 1.75 0 0 0 1.12-.84A1.81 1.81 0 0 0 6.7 7.4zm2.6 14a1.78 1.78 0 0 0-1.32-.58 1.75 1.75 0 0 0-1.28.54L6.7 16.6v-.06h10.78v.11z"></path></svg></label>
+                    <input type="password" id="signupConfirmPassword" placeholder="Confirm your password">
+                </div>
+
+                <div class="form-group">
+                    <label for="signupBio" class="label_input">Bio <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="M8 12c2.28 0 4-1.72 4-4s-1.72-4-4-4-4 1.72-4 4 1.72 4 4 4zm0-6c1.178 0 2 .822 2 2s-.822 2-2 2-2-.822-2-2 .822-2 2-2zm1 7H7c-2.757 0-5 2.243-5 5v1h2v-1c0-1.654 1.346-3 3-3h2c1.654 0 3 1.346 3 3v1h2v-1c0-2.757-2.243-5-5-5zm9.364-10.364L16.95 4.05C18.271 5.373 19 7.131 19 9s-.729 3.627-2.05 4.95l1.414 1.414C20.064 13.663 21 11.403 21 9s-.936-4.663-2.636-6.364z"></path><path d="M15.535 5.464 14.121 6.88C14.688 7.445 15 8.198 15 9s-.312 1.555-.879 2.12l1.414 1.416C16.479 11.592 17 10.337 17 9s-.521-2.592-1.465-3.536z"></path></svg></label>
+                    <textarea type="text" id="signupBio" placeholder="Enter your profile bio here..." maxlength="100" required></textarea>
+                </div>
+
+                <button id="signupButton">Register Account</button>
+                <div class="error-message" id="signupError"></div>
+            </div>
+            
+            <!-- OTP Form -->
+            <div class="otp-form" id="otpForm">
+                <div class="otp-title">Email Verification</div>
+                <div class="otp-subtitle">
+                    We've sent a verification code to <span id="otpEmail" style="font-weight: bold;"></span>
+                </div>
+                
+                <div class="otp-input-container">
+                    <input type="text" class="otp-input" id="otpDigit1" maxlength="1" data-next="otpDigit2">
+                    <input type="text" class="otp-input" id="otpDigit2" maxlength="1" data-next="otpDigit3" data-prev="otpDigit1">
+                    <input type="text" class="otp-input" id="otpDigit3" maxlength="1" data-next="otpDigit4" data-prev="otpDigit2">
+                    <input type="text" class="otp-input" id="otpDigit4" maxlength="1" data-next="otpDigit5" data-prev="otpDigit3">
+                    <input type="text" class="otp-input" id="otpDigit5" maxlength="1" data-next="otpDigit6" data-prev="otpDigit4">
+                    <input type="text" class="otp-input" id="otpDigit6" maxlength="1" data-prev="otpDigit5">
+                </div>
+                
+                <button id="verifyOtpButton">Verify OTP</button>
+                <div class="error-message" id="otpError"></div>
+                
+                <div class="otp-info">
+                    Didn't receive the code? 
+                    <span id="otpResendCountdown">Resend in <span class="countdown" id="countdown">60</span>s</span>
+                    <span id="otpResendButton" class="otp-resend" style="display: none;">Resend OTP</span>
+                </div>
+            </div>
+            
+            <!-- Profile Information -->
+            <div class="profile-info" id="profileInfo">
+                <div class="profile-header">
+                    <img id="profileAvatar" class="profile-avatar" src="/api/placeholder/80/80" alt="Profile Picture">
+                    <div class="profile-header-info">
+                        <h2 id="profileName"></h2>
+                        <p id="profileEmail"></p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>WhatsApp Number</label>
+                    <p id="profileWhatsapp"></p>
+                </div>
+                
+                <button class="logout-btn" id="logoutButton">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Splash Screen Logic
+window.addEventListener('load', function () {
+  const splashScreen = document.getElementById('splashScreen');
+  const mainContent = document.getElementById('mainContent');
+
+  setTimeout(function () {
+    splashScreen.style.opacity = '0';
+    mainContent.style.opacity = '1';
+    setTimeout(function () {
+      splashScreen.style.display = 'none';
+    }, 800);
+  }, 3500);
+});
+
+// DOM Elements
+const tabContainer = document.getElementById('tabContainer');
+const tabHighlighter = document.getElementById('tabHighlighter');
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const otpForm = document.getElementById('otpForm');
+const profileInfo = document.getElementById('profileInfo');
+const tabs = document.querySelectorAll('.tab');
+
+const loginButton = document.getElementById('loginButton');
+const signupButton = document.getElementById('signupButton');
+const verifyOtpButton = document.getElementById('verifyOtpButton');
+const logoutButton = document.getElementById('logoutButton');
+const otpResendButton = document.getElementById('otpResendButton');
+
+const loginError = document.getElementById('loginError');
+const signupError = document.getElementById('signupError');
+const otpError = document.getElementById('otpError');
+
+const profilePictureInput = document.getElementById('profilePictureInput');
+const profilePicturePreview = document.getElementById('profilePicturePreview');
+const profileAvatar = document.getElementById('profileAvatar');
+
+let profileImageData = null;
+let signupData = null;
+let otpCountdown = 60;
+let countdownInterval = null;
+
+// Particle Animation (unchanged)
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const particleCount = 100;
+const particleColors = ['rgba(201, 7, 1, ', 'rgba(255, 112, 0, ', 'rgba(288, 100, 0, '];
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 3 + 2;
+    this.speedX = Math.random() * 1 - 0.5;
+    this.speedY = Math.random() * 1 - 0.5;
+    this.color = particleColors[Math.floor(Math.random() * particleColors.length)];
+    this.opacity = Math.random() * 0.5 + 0.3;
+    this.pulseSpeed = Math.random() * 0.01 + 0.01;
+    this.pulseDirection = 1;
+    this.opacityValue = this.opacity;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x > canvas.width) this.x = 0;
+    if (this.x < 0) this.x = canvas.width;
+    if (this.y > canvas.height) this.y = 0;
+    if (this.y < 0) this.y = canvas.height;
+    if (this.opacityValue > this.opacity + 0.3 || this.opacityValue < this.opacity - 0.3) {
+      this.pulseDirection *= -1;
+    }
+    this.opacityValue += this.pulseSpeed * this.pulseDirection;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color + this.opacityValue + ')';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function initParticles() {
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+    for (let j = i; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < 100) {
+        ctx.beginPath();
+        ctx.strokeStyle = particles[i].color + (0.15 - (distance / 100) * 0.15) + ')';
+        ctx.lineWidth = 1;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+
+// Initialize particles
+initParticles();
+animateParticles();
+
+
+function checkAuthAndRedirect() {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        window.location.href = '../home/home.html';
+    }
+}
+
+// Run check on initial page load
+document.addEventListener('DOMContentLoaded', checkAuthAndRedirect);
+
+// Run check on pageshow (handles back/forward navigation)
+window.addEventListener('pageshow', function(event) {
+    // Check if the page is loaded from bfcache
+    if (event.persisted) {
+        checkAuthAndRedirect();
+    }
+});
+
+// Periodic check to handle any edge cases
+setInterval(checkAuthAndRedirect, 1000);
+// Resize canvas on window resize
+window.addEventListener('resize', function() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// Tab Switching
+tabContainer.addEventListener('click', function(e) {
+  if (e.target.classList.contains('tab')) {
+    const targetTab = e.target.getAttribute('data-tab');
+    
+    // Update tabs
+    tabs.forEach(tab => tab.classList.remove('active'));
+    e.target.classList.add('active');
+    
+    // Move highlighter
+    const tabIndex = Array.from(tabs).findIndex(tab => tab === e.target);
+    tabHighlighter.style.transform = `translateX(${tabIndex * 100}%)`;
+    
+    // Show appropriate form
+    loginForm.classList.remove('active');
+    signupForm.classList.remove('active');
+    otpForm.classList.remove('active');
+    profileInfo.classList.remove('active');
+    
+    if (targetTab === 'login') {
+      loginForm.classList.add('active');
+    } else if (targetTab === 'signup') {
+      signupForm.classList.add('active');
+    }
+    
+    // Clear error messages
+    loginError.textContent = '';
+    signupError.textContent = '';
+    otpError.textContent = '';
+  }
+});
+
+// Profile Picture Preview
+profilePictureInput.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Save image data for later use
+      profileImageData = e.target.result;
+      
+      // Update preview
+      profilePicturePreview.innerHTML = `<img src="${profileImageData}" alt="Profile Picture">`;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+/* Add this function for displaying user profile
+function displayUserProfile(userData) {
+  // Hide login and signup forms
+  loginForm.classList.remove('active');
+  signupForm.classList.remove('active');
+  otpForm.classList.remove('active');
+  
+  // Show profile info
+  profileInfo.classList.add('active');
+  
+  // Update profile data
+  document.getElementById('profileName').textContent = userData.name;
+  document.getElementById('profileEmail').textContent = userData.email;
+  document.getElementById('profileWhatsapp').textContent = userData.whatsapp;
+  
+  // Update profile avatar if available
+  if (userData.profileImage) {
+    document.getElementById('profileAvatar').src = userData.profileImage;
+  }
+  
+  // Reset tabs
+  tabs.forEach(tab => tab.classList.remove('active'));
+}*/
+
+// CSRF Token Generation (for security)
+function generateCSRFToken() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < 32; i++) {
+    token += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  document.getElementById('csrfToken').value = token;
+  return token;
+}
+
+// Generate CSRF Token on page load
+document.addEventListener('DOMContentLoaded', function() {
+  generateCSRFToken();
+  
+  // Check if user is already logged in
+  const userData = localStorage.getItem('userData');
+  if (userData) {
+    displayUserProfile(JSON.parse(userData));
+  }
+});
+
+// Login Form Submission
+loginButton.addEventListener('click', function() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const csrfToken = document.getElementById('csrfToken').value;
+  
+  // Validate inputs
+  if (!email || !password) {
+    loginError.textContent = 'Please enter both email and password';
+    return;
+  }
+  
+  // Send login request
+  loginButton.textContent = 'Signing in...';
+  loginButton.disabled = true;
+  
+  fetch('http://localhost:3000/api/auth/login' || 'http://localhost:3000/api/auth/login' || 'http://localhost:3000/api/auth/login'|| 'http://localhost:3000/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken
+    },
+    body: JSON.stringify({ email, password })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.token) {
+      // Successful login
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
+      
+      // Display profile
+      //displayUserProfile(data.user);
+      const urlParams = new URLSearchParams(window.location.search);
+    const from = urlParams.get('from');
+    const videoId = urlParams.get('id');
+    const webbase = urlParams.get('webbase');
+
+    if (from === 'landing' && videoId === 'main') {
+        window.location.href = `/`;
+        return;
+    }
+
+    if (from === 'landing' && videoId) {
+        window.location.href = `/levyni/deep-wave.html?v=${videoId}`;
+        return;
+    }
+    if (from === 'webbase' && webbase) {
+            window.location.href = webbase; // Redirect to the specified webbase URL
+            return;
+    }
+
+      window.location.href = '/'; // Redirect to home page after login
+      
+      loginError.className = 'error-message success-message';
+      loginError.textContent = 'Login successful! Redirecting...';
+    } else {
+      // Failed login
+      loginError.className = 'error-message';
+      loginError.textContent = data.message || 'Login failed';
+    }
+  })
+  .catch(error => {
+    console.error('Login error:', error);
+    loginError.className = 'error-message';
+    loginError.textContent = 'An error occurred. Please try again.';
+  })
+  .finally(() => {
+    loginButton.textContent = 'Sign in';
+    loginButton.disabled = false;
+  });
+});
+
+// Add this function before where it's used
+function validateEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
+
+// Sign Up Form Submission and OTP Request
+// Sign Up Form Submission and OTP Request
+signupButton.addEventListener('click', function() {
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const whatsapp = document.getElementById('signupWhatsapp').value;
+  const password = document.getElementById('signupPassword').value;
+  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+  const bio = document.getElementById('signupBio').value;
+  const csrfToken = document.getElementById('csrfToken').value;
+  const profileImageFile = profilePictureInput.files[0]; // Get the uploaded image file
+  
+  // Validate inputs
+  if (!name || !email || !whatsapp || !password || !confirmPassword || !bio || !profileImageFile) {
+    signupError.textContent = 'Please fill in all fields';
+    return;
+  }
+  
+  if (password !== confirmPassword) {
+    signupError.textContent = 'Passwords do not match';
+    return;
+  }
+
+  if (!profileImageFile) {
+    signupError.textContent = 'Profile Picture Required!';
+    return;
+  }
+  
+  
+  if (password.length < 8) {
+    signupError.textContent = 'Password must be at least 8 characters long';
+    return;
+  }
+  
+  if (!validateEmail(email)) {
+    signupError.textContent = 'Please enter a valid email address';
+    return;
+  }
+  
+  if (whatsapp.length !== 11 || !/^\d+$/.test(whatsapp)) {
+    signupError.textContent = 'Please enter a valid 11-digit WhatsApp number';
+    return;
+  }
+  
+  // Prepare form data for multipart/form-data to include file
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('email', email);
+  formData.append('whatsapp', whatsapp);
+  formData.append('password', password);
+  formData.append('bio', bio);
+  if (profileImageFile) {
+    formData.append('profileImage', profileImageFile); // Append image file if provided
+  }
+  
+  // Send OTP request
+  signupButton.textContent = 'Sending OTP...';
+  signupButton.disabled = true;
+  
+  fetch('http://localhost:3000/api/auth/register/sendotp', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': csrfToken // CSRF token for security
+    },
+    body: formData // Use FormData to handle file upload
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.tempToken) {
+      // Store the temporary token for OTP verification
+      localStorage.setItem('tempRegToken', data.tempToken);
+      
+      // Show OTP form
+      loginForm.classList.remove('active');
+      signupForm.classList.remove('active');
+      otpForm.classList.add('active');
+      
+      // Set email in OTP form
+      document.getElementById('otpEmail').textContent = email;
+      
+      // Start countdown
+      startOtpCountdown();
+      
+      // Clear OTP inputs
+      document.querySelectorAll('.otp-input').forEach(input => {
+        input.value = '';
+      });
+      document.getElementById('otpDigit1').focus();
+    } else {
+      signupError.className = 'error-message';
+      signupError.textContent = data.message || 'Failed to send OTP';
+    }
+  })
+  .catch(error => {
+    console.error('OTP request error:', error);
+    signupError.className = 'error-message';
+    signupError.textContent = 'An error occurred. Please try again.';
+  })
+  .finally(() => {
+    signupButton.textContent = 'Register Account';
+    signupButton.disabled = false;
+  });
+});
+
+// OTP Verification
+verifyOtpButton.addEventListener('click', function() {
+  // Collect OTP digits
+  const otp = [
+    document.getElementById('otpDigit1').value,
+    document.getElementById('otpDigit2').value,
+    document.getElementById('otpDigit3').value,
+    document.getElementById('otpDigit4').value,
+    document.getElementById('otpDigit5').value,
+    document.getElementById('otpDigit6').value
+  ].join('');
+  
+  const tempToken = localStorage.getItem('tempRegToken');
+  const csrfToken = document.getElementById('csrfToken').value;
+  
+  if (!tempToken) {
+    otpError.textContent = 'Registration session expired. Please register again.';
+    return;
+  }
+  
+  if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+    otpError.textContent = 'Please enter a valid 6-digit OTP';
+    return;
+  }
+  
+  verifyOtpButton.textContent = 'Verifying...';
+  verifyOtpButton.disabled = true;
+  
+  fetch('http://localhost:3000/api/auth/register/verify', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken
+    },
+    body: JSON.stringify({ otp, tempToken })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.token) {
+      // OTP verification successful
+      otpError.className = 'error-message success-message';
+      otpError.textContent = 'Account created successfully! Redirecting to profile...';
+      
+      // Store authentication token and user data
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
+      localStorage.removeItem('tempRegToken');
+      
+      // Redirect to profile after a delay
+      setTimeout(function() {
+        //displayUserProfile(data.user);
+        window.location.href = '..'
+      }, 1500);
+    } else {
+      otpError.className = 'error-message';
+      otpError.textContent = data.message || 'OTP verification failed';
+    }
+  })
+  .catch(error => {
+    console.error('OTP verification error:', error);
+    otpError.className = 'error-message';
+    otpError.textContent = 'An error occurred. Please try again.';
+  })
+  .finally(() => {
+    verifyOtpButton.textContent = 'Verify OTP';
+    verifyOtpButton.disabled = false;
+  });
+});
+
+// OTP Resend
+otpResendButton.addEventListener('click', function() {
+  const email = document.getElementById('otpEmail').textContent;
+  const tempToken = localStorage.getItem('tempRegToken');
+  const csrfToken = document.getElementById('csrfToken').value;
+  
+  otpResendButton.style.display = 'none';
+  document.getElementById('otpResendCountdown').style.display = 'inline';
+  otpCountdown = 60;
+  document.getElementById('countdown').textContent = otpCountdown;
+  
+  startOtpCountdown();
+  
+  // Resend OTP
+  fetch('http://localhost:3000/api/auth/resendotp', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken
+    },
+    body: JSON.stringify({ email, tempToken })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.tempToken) {
+      // Update the temporary token
+      localStorage.setItem('tempRegToken', data.tempToken);
+      
+      otpError.textContent = 'OTP has been resent';
+      otpError.className = 'error-message success-message';
+    } else {
+      otpError.className = 'error-message';
+      otpError.textContent = data.message || 'Failed to resend OTP';
+    }
+  })
+  .catch(error => {
+    console.error('OTP resend error:', error);
+    otpError.className = 'error-message';
+    otpError.textContent = 'An error occurred. Please try again.';
+  });
+});
+
+// Logout Button - Update to clear auth token
+logoutButton.addEventListener('click', function() {
+  localStorage.removeItem('userData');
+  localStorage.removeItem('authToken');
+  profileInfo.classList.remove('active');
+  loginForm.classList.add('active');
+  
+  // Reset tabs
+  tabs.forEach(tab => tab.classList.remove('active'));
+  tabs[0].classList.add('active');
+  tabHighlighter.style.transform = 'translateX(0)';
+  
+  // Clear login form
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+});
+
+// Auto-navigation for OTP input fields
+document.querySelectorAll('.otp-input').forEach(input => {
+  input.addEventListener('input', function() {
+    if (this.value.length === this.maxLength) {
+      const nextField = document.getElementById(this.getAttribute('data-next'));
+      if (nextField) {
+        nextField.focus();
+      }
+    }
+  });
+  
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Backspace' && !this.value) {
+      const prevField = document.getElementById(this.getAttribute('data-prev'));
+      if (prevField) {
+        prevField.focus();
+      }
+    }
+  });
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.querySelector('.login-form');
+    if (!loginForm) {
+        console.error('Login form not found');
+        return;
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value.trim();
+
+        if (!email || !password) {
+            alert('Please enter both email and password');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            // Save token to localStorage
+            localStorage.setItem('authToken', data.token);
+            console.log('Token saved to localStorage:', data.token);
+
+            // Save user data if needed (optional)
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            // Redirect to home page
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Login error:', error.message);
+            alert(`Login failed: ${error.message}`);
+        }
+    });
+    
+});
+
+// Start OTP countdown
+function startOtpCountdown() {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+  
+  document.getElementById('otpResendCountdown').style.display = 'inline';
+  document.getElementById('otpResendButton').style.display = 'none';
+  
+  countdownInterval = setInterval(function() {
+    otpCountdown--;
+    document.getElementById('countdown').textContent = otpCountdown;
+    
+    if (otpCountdown <= 0) {
+      clearInterval(countdownInterval);
+      document.getElementById('otpResendCountdown').style.display = 'none';
+      document.getElementById('otpResendButton').style.display = 'inline';
+    }
+  }, 1000);
+}
+
+    </script>
+</body>
+</html>
