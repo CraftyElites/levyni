@@ -799,6 +799,13 @@ app.get('/api/app-update', async (req, res) => {
 
     }
   });
+  app.get('/qa-signup', async (req, res) => {
+    try {
+      res.sendFile(path.join(__dirname, 'qa-signup.html'));
+    } catch(error) {
+      console.log('Route Error:', error);
+    }
+  });
   app.post('/api/answers', async (req, res) => {
     const { email, taskId, response, reward, type } = req.body;
     try {
