@@ -799,6 +799,261 @@ app.get('/api/app-update', async (req, res) => {
 
     }
   });
+  app.get('/delete-account', (req, res) => {
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Delete Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0f0f0f;
+      --white: #fafafa;
+      --pale-rose: #f5ede8;
+      --pale-blue: #e8eef5;
+      --pale-sage: #e8f0ec;
+      --mid-gray: #888;
+      --light-gray: #e2e2e2;
+      --accent: #c0392b;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      max-width: 560px;
+      width: 100%;
+      border: 1px solid var(--light-gray);
+      border-radius: 4px;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Top accent strip */
+    .card-top {
+      height: 5px;
+      background: linear-gradient(90deg, var(--pale-rose) 0%, var(--pale-blue) 50%, var(--pale-sage) 100%);
+    }
+
+    .card-body {
+      padding: 3rem 2.5rem 2.5rem;
+      background: var(--white);
+    }
+
+    .icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--pale-rose);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .icon-wrap svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.75rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+      color: var(--black);
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--mid-gray);
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    /* ── Step block ── */
+    .step-block {
+      background: var(--pale-blue);
+      border-radius: 4px;
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .step-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      margin-bottom: 0.55rem;
+    }
+
+    .step-path {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .crumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--black);
+    }
+
+    .crumb-highlight {
+      background: var(--white);
+      border: 1px solid var(--light-gray);
+      border-radius: 3px;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.85rem;
+    }
+
+    .crumb-highlight.danger {
+      background: #fff0ef;
+      border-color: #f5c0bb;
+      color: var(--accent);
+    }
+
+    .sep {
+      color: var(--mid-gray);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    /* ── Divider ── */
+    .or-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      color: var(--mid-gray);
+      font-size: 0.8rem;
+    }
+    .or-row::before,
+    .or-row::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--light-gray);
+    }
+
+    /* ── Contact block ── */
+    .contact-block {
+      background: var(--pale-sage);
+      border-radius: 4px;
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .contact-block .step-label { margin-bottom: 0.55rem; }
+
+    .email-link {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--black);
+      text-decoration: none;
+      border-bottom: 1.5px solid var(--black);
+      padding-bottom: 1px;
+      transition: opacity 0.2s;
+    }
+    .email-link:hover { opacity: 0.5; }
+
+    /* ── Footer note ── */
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--mid-gray);
+      font-weight: 300;
+      line-height: 1.6;
+      border-top: 1px solid var(--light-gray);
+      padding-top: 1.5rem;
+    }
+
+    .footer-note strong {
+      color: var(--black);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="card-top"></div>
+    <div class="card-body">
+
+      <div class="icon-wrap">
+        <svg viewBox="0 0 24 24">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+      </div>
+
+      <h1>Delete Your Account</h1>
+      <p class="subtitle">Your account and all associated data will be permanently removed. This action cannot be undone.</p>
+
+      <!-- In-app path -->
+      <div class="step-block">
+        <div class="step-label">Option 1 &mdash; In the app</div>
+        <div class="step-path">
+          <span class="crumb">
+            <span class="crumb-highlight">Profile</span>
+          </span>
+          <span class="sep">›</span>
+          <span class="crumb">
+            <span class="crumb-highlight danger">Delete Account</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="or-row">or</div>
+
+      <!-- Email path -->
+      <div class="contact-block">
+        <div class="step-label">Option 2 &mdash; Contact support</div>
+        <a class="email-link" href="mailto:thelivingconnect@gmail.com">thelivingconnect@gmail.com</a>
+      </div>
+
+      <p class="footer-note">
+        <strong>Note:</strong> Once deleted, your account cannot be recovered. If you have an active subscription, please cancel it before proceeding.
+      </p>
+
+    </div>
+  </div>
+
+</body>
+</html>`);
+});
+
   app.get('/qa-signup', async (req, res) => {
     try {
       res.sendFile(path.join(__dirname, 'qa-signup.html'));
