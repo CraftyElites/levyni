@@ -1436,7 +1436,8 @@
             }
 
             .hero-subtitle {
-                font-size: 0.8em;
+                font-size: 0.7em;
+                padding: 12px;
             }
 
             .floating-shape {
@@ -2787,8 +2788,8 @@ const enhanceButtonClick = (buttonId) => {
             setTimeout(() => {
                 button.style.transform = '';
                 window.location.href = button.dataset.url || (
-                    buttonId === 'header-cta' ? 'https://project.levyni.com' : 
-                    buttonId === 'subscribe' ? '/archive/v101.apk' : '#'
+                    buttonId === 'header-cta' ? '/store/apple' : 
+                    buttonId === 'subscribe' ? '/store/play' : '#'
                 );
                 
             }, 150);
