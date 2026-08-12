@@ -185,7 +185,7 @@ const pool = mysql.createPool({
     };*/
     const authenticateToken = makeAuthMiddleware(pool);
     app.use(express.static(path.join(__dirname, '../public')))
-    const qaSignupRouter = require('./routes/qa-tester-router')(transporter);
+    const qaSignupRouter = require('./src/routes/qa-tester-router')(transporter);
     app.use('/qa-signup', qaSignupRouter);
     //--- ADMIN ROUTES ---
     const admin = express.Router()
