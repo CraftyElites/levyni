@@ -3,7 +3,7 @@ const path = require("path");
 const sharp = require("sharp");
 
 // Go up one level from index/ to project root, then into public/
-const PUBLIC_DIR = path.join(__dirname, "..", "public");
+const PUBLIC_DIR = path.join(__dirname, "..", "..", "..", "public");
 const THUMB_SUFFIX = "_thumb";
 const THUMB_WIDTH = 40;
 const QUALITY = 40;
