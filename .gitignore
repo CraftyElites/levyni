@@ -1,0 +1,7 @@
+server/node_modules/
+server/.env
+server/admin-actions.log
+server/db/
+server/google-token.json
+server/package-lock.json
+server/tmp/

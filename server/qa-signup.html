@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Our QA Testing Team</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background snowflakes/particles */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, rgba(251, 191, 36, 0.3), transparent),
+                radial-gradient(2px 2px at 60% 70%, rgba(251, 191, 36, 0.2), transparent),
+                radial-gradient(1px 1px at 50% 50%, rgba(251, 191, 36, 0.1), transparent),
+                radial-gradient(1px 1px at 80% 10%, rgba(251, 191, 36, 0.15), transparent);
+            background-size: 200% 200%;
+            animation: twinkle 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .container {
+            background: rgba(26, 35, 50, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(251, 191, 36, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 50px 40px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(251, 191, 36, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        h1 {
+            color: #fbbf24;
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #e0e6ed;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            background: #0f1419;
+            border: 2px solid #2d3748;
+            border-radius: 10px;
+            color: #e0e6ed;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #6b7280;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+            background: #1a2332;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fbbf24' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            padding-right: 45px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border: none;
+            border-radius: 10px;
+            color: #0f1419;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(251, 191, 36, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .required {
+            color: #f59e0b;
+            margin-left: 2px;
+        }
+
+        .info-text {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .icon {
+                width: 70px;
+                height: 70px;
+                font-size: 35px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">🧪</div>
+            <h1>Join Our QA Team</h1>
+            <p class="subtitle">Help us build better software. Become a QA tester and get early access to new features.
+            </p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form id="qaForm">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="your.email@example.com"
+                    required
+                >
+                <p class="info-text">We'll contact you at this email address</p>
+            </div>
+
+            <div class="form-group">
+                <label for="experience">Testing Experience</label>
+                <select id="experience" name="experience">
+                    <option value="">Select your experience level</option>
+                    <option value="none">No experience - Eager to learn</option>
+                    <option value="beginner">Beginner - Some basic testing</option>
+                    <option value="intermediate">Intermediate - Regular testing experience</option>
+                    <option value="advanced">Advanced - Professional QA experience</option>
+                </select>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Join QA Team
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('qaForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type} show`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                experience: document.getElementById('experience').value
+            };
+
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch('/qa-signup/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    form.reset();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please check your connection and try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Join QA Team';
+            }
+        });
+    </script>
+</body>
+
+</html>
