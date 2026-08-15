@@ -68,7 +68,7 @@ const saltRounds = 10;
 const nodemailer = require('nodemailer');
 
 // Create SMTP transporter (global, so it can be reused)
-const smtpTransporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     secure: process.env.SMTP_SECURE === 'true',
@@ -77,44 +77,6 @@ const smtpTransporter = nodemailer.createTransport({
         pass: process.env.SMTP_PASS
     }
 });
-
-// Resend fallback client (used only if SMTP fails or times out)
-const { Resend } = require('resend');
-const resend = new Resend(process.env.RESEND_API_KEY);
-const RESEND_FROM = process.env.RESEND_FROM || 'Levyni <noreply@levyni.com>';
-
-function sendMailWithTimeout(mailOptions, timeoutMs = 8000) {
-    return Promise.race([
-        smtpTransporter.sendMail(mailOptions),
-        new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('SMTP timeout')), timeoutMs)
-        )
-    ]);
-}
-
-// Drop-in replacement for the old `transporter` object.
-// Same .sendMail(mailOptions) interface, so every existing call site
-// and every router that receives `transporter` as a parameter keeps working
-// with zero changes elsewhere. SMTP is tried first; Resend is the fallback.
-const transporter = {
-    sendMail: async (mailOptions) => {
-        try {
-            const info = await sendMailWithTimeout(mailOptions);
-            console.log(`Email sent via SMTP to ${mailOptions.to}`);
-            return info;
-        } catch (smtpError) {
-            console.warn(`SMTP failed for ${mailOptions.to} (${smtpError.message}), falling back to Resend`);
-            const result = await resend.emails.send({
-                from: RESEND_FROM,
-                to: mailOptions.to,
-                subject: mailOptions.subject,
-                text: mailOptions.text
-            });
-            console.log(`Email sent via Resend fallback to ${mailOptions.to}`);
-            return result;
-        }
-    }
-};
 
 const DATA_FILE = path.join(__dirname, 'db', 'json', 'data.json');
 const USERS_FILE = path.join(__dirname, 'db', 'json', 'users.json');
