@@ -1824,6 +1824,68 @@ const pool = mysql.createPool({
         }
     });
 
+    /**
+ * Drop into Levyni Co server.js (inside the main async IIFE, near other /api/auth routes).
+ * Creates a user without OTP when a valid admin_key is provided.
+ *
+ * POST /api/auth/admin-create
+ * Body: { email, password, username, adminKey }
+ */
+app.post('/api/auth/admin-create', async (req, res) => {
+    const { email, password, username, adminKey } = req.body;
+    try {
+        if (!email || !password || !username || !adminKey) {
+            return res.status(400).json({ error: 'email, password, username and adminKey are required' });
+        }
+
+        const sanitizedEmail = sanitizeEmail(email);
+
+        const [keyRows] = await pool.query('SELECT value FROM settings WHERE name = "admin_key"');
+        if (keyRows.length === 0 || keyRows[0].value !== adminKey) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const [userRows] = await pool.query('SELECT userId FROM users WHERE email = ?', [sanitizedEmail]);
+        if (userRows.length > 0) {
+            return res.status(409).json({
+                error: 'Email already registered',
+                userId: userRows[0].userId,
+                alreadyRegistered: true,
+            });
+        }
+
+        // Clear any leftover OTP pending rows for this email
+        await pool.query('DELETE FROM otps WHERE email = ?', [sanitizedEmail]);
+
+        const userId = generateUserId();
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        await pool.query(
+            `INSERT INTO users
+              (email, userId, username, hashedPassword, profileImage, whatsappNo,
+               accountNo, accountName, accountBank, verifiedPoints, unVerifiedPoints,
+               marketPoints, record, pending, role, badgeType)
+             VALUES (?, ?, ?, ?, null, 0, null, null, null, 20, 0, 0, 0, 0, 'user', 'Verified')`,
+            [sanitizedEmail, userId, String(username).trim().slice(0, 80), hashedPassword]
+        );
+
+        const [newUserRows] = await pool.query(
+            'SELECT email, userId, username, role, badgeType, verifiedPoints FROM users WHERE email = ?',
+            [sanitizedEmail]
+        );
+
+        res.status(201).json({
+            success: true,
+            message: 'User created',
+            user: newUserRows[0],
+            userId,
+        });
+    } catch (error) {
+        console.error('Admin create user error:', error.message);
+        res.status(500).json({ error: 'Failed to create user' });
+    }
+});
+
     // POST /api/users/save-push-token - Save Expo push token for user (authenticated)
     app.post('/api/users/save-push-token', async (req, res) => {
         const { pushToken, userEmail } = req.body;
